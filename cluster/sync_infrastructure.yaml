@@ -19,6 +19,8 @@ spec:
   interval: 10m0s
   path: ./cluster
   prune: true
+  dependsOn:
+    - name: flux-system
   sourceRef:
     kind: GitRepository
     name: cluster-system
