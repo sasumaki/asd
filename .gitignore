@@ -1,2 +1,2 @@
-cluster/secrets/unsealed/*
+secrets/unsealed/*
 secrets/unsealed/deployment-secret.yaml
