@@ -37,12 +37,12 @@ spec:
 
   - name: training
     container:
-      image: sasumaki/lol-train
+      image: sasumaki/mnist-training
       args: [aiga_train, Train, --parameters, "{{inputs.parameters}}"] 
     inputs:
       parameters:
-        - name: lol
         - name: epochs
+        - name: learning_rate
       artifacts:
       - name: data
         path: /app/data

@@ -42,10 +42,12 @@ spec:
 
                 - name: training
                   container:
-                    image: sasumaki/mnist-train
-                    command: [python, train.py]
-                  
+                    image: sasumaki/mnist-training
+                    args: [aiga_train, Train, --parameters, "{{inputs.parameters}}"] 
                   inputs:
+                    parameters:
+                      - name: epochs
+                      - name: learning_rate
                     artifacts:
                     - name: data
                       path: /app/data
