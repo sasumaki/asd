@@ -1,0 +1,13 @@
+apiVersion: eventing.knative.dev/v1beta1
+kind: Trigger
+metadata:
+  name: catch-all-trigger
+  namespace: seldon-system
+
+spec:
+  broker: nats-broker2
+  subscriber:
+    ref:
+      apiVersion: v1
+      kind: Service
+      name: event-display
