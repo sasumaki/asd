@@ -1,0 +1,98 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: webhook
+  namespace: argo
+spec:
+  template:
+    serviceAccountName: argo-events-sa
+  dependencies:
+    - name: test-webhook # Triggers when webhook defined at eventing/webhooks/webhook.yaml is called
+      eventSourceName: webhook 
+      eventName: example
+  triggers:
+    - template:
+        name: train-mnist-trigger
+        k8s:
+          group: argoproj.io
+          version: v1alpha1
+          resource: workflows
+          operation: create
+          source:
+            resource:
+              apiVersion: argoproj.io/v1alpha1
+              kind: Workflow
+              metadata:
+                generateName: mnist-
+                namespace: argo
+              spec:
+                # serviceAccountName: argo
+                volumes:
+                - name: ssh-key-volume
+                  secret:
+                    secretName: github-creds
+                    defaultMode: 256
+                entrypoint: flow 
+                templates:
+                - name: flow
+                  steps:
+                    - - name: train
+                        template: training
+
+
+                - name: training
+                  container:
+                    image: sasumaki/mnist-train
+                    command: [python, train.py]
+                  
+                  inputs:
+                    artifacts:
+                    - name: data
+                      path: /app/data
+                      s3:
+                        endpoint: s3.amazonaws.com
+                        bucket: aiga-data
+                        key: MNIST_data
+                        accessKeySecret:
+                          name: aws-secret
+                          key: AWS_ACCESS_KEY_ID
+                        secretKeySecret:
+                          name: aws-secret
+                          key: AWS_SECRET_ACCESS_KEY
+                  
+
+                  outputs:
+                    parameters:
+                      - name: S3_MODEL_URI
+                        value: s3://aiga-models/{{pod.name}}
+                    artifacts:
+                    - name: model
+                      path: /app/outputs/model.onnx
+                      archive:
+                        none: {}
+                      s3:
+                        endpoint: s3.amazonaws.com
+                        bucket: aiga-models
+                        key: "{{pod.name}}/model.onnx"
+                        accessKeySecret:
+                          name: aws-secret
+                          key: AWS_ACCESS_KEY_ID
+                        secretKeySecret:
+                          name: aws-secret
+                          key: AWS_SECRET_ACCESS_KEY
+
+                    - name: metadata
+                      path: /app/outputs/metadata.yaml
+                      archive:
+                        none: {}
+                      s3:
+                        endpoint: s3.amazonaws.com
+                        bucket: aiga-models
+                        key: "{{pod.name}}/metadata.yaml"
+                        accessKeySecret:
+                          name: aws-secret
+                          key: AWS_ACCESS_KEY_ID
+                        secretKeySecret:
+                          name: aws-secret
+                          key: AWS_SECRET_ACCESS_KEY
+                  
