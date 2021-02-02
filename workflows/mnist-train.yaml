@@ -18,22 +18,17 @@ spec:
           template: training
           arguments:
             parameters:
-              - name: lol
-                value: beer
               - name: epochs
-                value: "{{item.epochs}}"
+                value: 1
               - name: learning_rate
-                value: "{{item.rate}}"
-          withItems:
-            - { epochs: 3, rate: 0.0002 }
-
+                value: 0.0002
+          
       - - name: git
           template: git-commit
           arguments:
             parameters:
-            - name: S3_MODEL_URI
-              value: "{{steps.train.outputs.parameters.S3_MODEL_URI}}"
-
+              - name: S3_MODEL_URI
+                value: "{{steps.train.outputs.parameters.S3_MODEL_URI}}"
 
   - name: training
     container:
@@ -111,6 +106,8 @@ spec:
         mountPath: "/root/.ssh"
       source: |
         cd /src
+        echo "{{inputs}}"
+        echo "{{inputs.parameters}}"
         echo "MODEL_URI={{inputs.parameters.S3_MODEL_URI}}" > manifests/environment.properties
         cat manifests/environment.properties
         git config --global user.email "workflow-bot@example.com"
