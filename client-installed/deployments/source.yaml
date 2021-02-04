@@ -7,6 +7,6 @@ metadata:
 spec:
   interval: 30s
   ref:
-    branch: staging
+    branch: triton
   url: https://github.com/sasumaki/mnist
 
