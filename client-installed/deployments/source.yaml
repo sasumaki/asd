@@ -5,8 +5,8 @@ metadata:
   name: mnist
   namespace: flux-system
 spec:
-  interval: 30s
+  interval: 60s
   ref:
-    branch: triton
+    branch: staging
   url: https://github.com/sasumaki/mnist
 
