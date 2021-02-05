@@ -32,7 +32,8 @@ spec:
 
   - name: training
     container:
-      image: sasumaki/mnist-training
+      image: sasumaki/mnist-train-k
+      # image: sasumaki/mnist-training
       args: [aiga_train, Train, --parameters, "{{inputs.parameters}}"] 
     inputs:
       parameters:
